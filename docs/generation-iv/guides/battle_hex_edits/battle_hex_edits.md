@@ -42,6 +42,7 @@ This information comes from tutorials, guides, and research shared via other mea
   - [Quick Feet Speed Multiplier](#quick-feet-speed-multiplier)
   - [Slow Start Stat-Reduction Duration](#slow-start-stat-reduction-duration)
   - [Rain Dish End-of-Turn HP Restoration](#rain-dish-end-of-turn-hp-restoration)
+  - [Reckless Damage Multiplier](#reckless-damage-multiplier)
 
 - [Item Held Effects](#item-held-effects)
   - [Leftovers End-of-Turn HP Restoration](#leftovers-end-of-turn-hp-restoration)
@@ -185,7 +186,7 @@ Open the relevant file and change the byte(s) at the provided offset(s):
   | **All Games** | `0C 20 60 43 0A 21`  |
 </details>
 
-Iron Fist increases the power of effected punching moves by **20%**. The battle logic calculates the increased damage by multiplying and dividing the move's power by explicitly defined values, in this case **12** and **10**, respectively.
+Iron Fist increases the power of [effected punching moves](/docs/generation-iv/guides/editing_moves/editing_moves.md#punching-moves) by **20%**. The battle logic calculates the increased damage by multiplying and dividing the move's power by explicitly defined values, in this case **12** and **10**, respectively.
 
 As an example, to change the boost from **20%** to **50%** (matching similar damage-boosting Abilities in later generations, such as Mega Launcher or Sharpness), change the byte at the **multiplier offset** from `0C` (12 in decimal) to `0F` (15 in decimal).
 <br/>
@@ -388,6 +389,61 @@ Open the relevant file and change the byte at the provided offset:
 Rain Dish restores **1/16<sup>th</sup>** of the Pokémon's max HP. The battle logic calculates the HP restoration amount by dividing the Pokémon's max HP by an explicitly defined value, in this case **16**. 
 
 As an example, to change the HP restoration from **1/16<sup>th</sup>** of the Pokémon's max HP to **1/10<sup>th</sup>**, change the byte from `10` (16 in decimal) to `0A` (10 in decimal).
+<br/>
+
+
+### Reckless Damage Multiplier
+> Sources and Credits: [Yako](https://discord.com/channels/446824489045721090/920372513488404542/1475182718189830297), Plat Decomp ([1](https://github.com/pret/pokeplatinum/blob/main/res/battle/scripts/effects/effect_script_0045.s#L6), [2](https://github.com/pret/pokeplatinum/blob/baf527b30d8d7ed6d3fefd6ad48e5c7acd6ce889/res/battle/scripts/effects/effect_script_0048.s#L6), [3](https://github.com/pret/pokeplatinum/blob/baf527b30d8d7ed6d3fefd6ad48e5c7acd6ce889/res/battle/scripts/effects/effect_script_0198.s#L6), [4](https://github.com/pret/pokeplatinum/blob/baf527b30d8d7ed6d3fefd6ad48e5c7acd6ce889/res/battle/scripts/effects/effect_script_0253.s#L6), [5](https://github.com/pret/pokeplatinum/blob/baf527b30d8d7ed6d3fefd6ad48e5c7acd6ce889/res/battle/scripts/effects/effect_script_0262.s#L6), [6](https://github.com/pret/pokeplatinum/blob/baf527b30d8d7ed6d3fefd6ad48e5c7acd6ce889/res/battle/scripts/effects/effect_script_0269.s#L6)), HGSS Decomp ([1](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0045.s#L7), [2](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0048.s#L7), [3](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0198.s#L7), [4](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0253.s#L7), [5](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0262.s#L7), [6](https://github.com/pret/pokeheartgold/blob/47e0855242035f82d3002d962fdc8d018bf2be4f/files/battledata/script/effect_script/effect_script_0269.s#L7))
+
+Reckless increases the power of moves that have recoil or crash damage by **20%**, except Struggle. The battle logic calculates the increased damage by multiplying and dividing the move's power by explicitly defined values, in this case **12** and **10**, respectively.
+
+However, the **multiplier value** is explicitly defined across six individual move effects that involve recoil or crash damage (in vanilla Pokémon games), meaning six edits are needed to effectively change Reckless' damage multiplier. 
+
+Unpack the following NARCs, open the specified files, and change the bytes at the provided offsets. Make sure to pack the NARC after saving all the files.
+
+#### Crash Damage if Move Misses (Vanilla Moves: Hi Jump Kick, Jump Kick)
+| Game                     | NARC to unpack              | File            | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:---------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_45.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_45.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_45.bin` | `0x20` | `0C`         |
+
+#### 25% Recoil Damage (Vanilla Moves: Take Down, Submission) 
+| Game                     | NARC to unpack              | File            | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:---------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_48.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_48.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_48.bin` | `0x20` | `0C`         |
+
+#### 33% Recoil Damage (Vanilla Moves: Double-Edge, Brave Bird, Wood Hammer) 
+| Game                     | NARC to unpack              | File             | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:----------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_198.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_198.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_198.bin` | `0x20` | `0C`         |
+
+#### 33% Recoil Damage and Chance to Burn (Vanilla Moves: Flare Blitz)
+| Game                     | NARC to unpack              | File             | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:----------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_253.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_253.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_253.bin` | `0x20` | `0C`         |
+
+#### 33% Recoil Damage and Chance to Paraluze (Vanilla Moves: Volt Tackle)
+| Game                     | NARC to unpack              | File             | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:----------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_262.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_262.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_262.bin` | `0x20` | `0C`         |
+
+#### 50% Recoil Damage (Vanilla Moves: Head Smash) 
+| Game                     | NARC to unpack              | File             | Offset | Vanilla Byte |
+|:------------------------:|:---------------------------:|:----------------:|:------:|:------------:|
+| **HeartGold/SoulSilver** | `/a/0/3/0`                  | `0_269.bin`      | `0x20` | `0C`         |
+| **Platinum**             | `/battle/skill/be_seq.narc` | `be_seq_269.bin` | `0x20` | `0C`         |
+| **Diamond/Pearl**        | `/battle/skill/be_seq.narc` | `be_seq_269.bin` | `0x20` | `0C`         |
+
+
 <br/>
 
 
